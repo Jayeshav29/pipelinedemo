@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9a96915e-a583-479b-a183-c48e5835ddcf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<cloudhub:config name="CloudHub_Config" doc:name="CloudHub Config" doc:id="52186a53-b0b6-4360-ae59-95c4a218cf33" >
+		<cloudhub:connection username="jayapril" password="M@dhuri2992" environment="b3df9fd0-e09a-4476-8601-d12cd85f1422" />
+	</cloudhub:config>
+	<flow name="helloworldFlow" doc:id="bab0d460-22fa-4409-b386-afe73eb98599" >
+		<http:listener doc:name="Listener" doc:id="550a2819-88d7-4dfd-9029-2c43ab90b5e1" config-ref="HTTP_Listener_config" path="/hello"/>
+		<set-payload value='#["hello Jayesh"]' doc:name="Set Payload" doc:id="bb22c518-7960-4a92-a1f1-e1c0dee737b5" />
+		<ee:transform doc:name="Transform Message" doc:id="5e1957bc-6a3d-4fe9-b529-6b21252467f0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<cloudhub:create-notification domain="helloworld29" doc:id="fee6fd53-f9fe-47d7-8d7a-e85a816d5a2e" config-ref="CloudHub_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="185e18b2-2436-4e7e-82e4-3ce370fb7f7b" message="#[payload]"/>
+	</flow>
+</mule>
